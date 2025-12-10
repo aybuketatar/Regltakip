@@ -3,7 +3,6 @@ import random
 
 app = Flask(__name__)
 
-# Rastgele Sağlık Tavsiyeleri Listesi
 tavsiyeler = [
     "Bol su içmek şişkinliği azaltmaya yardımcı olabilir. 💧",
     "Magnezyum içeren besinler (muz, bitter çikolata) kramplara iyi gelir. 🍌",
@@ -20,3 +19,4 @@ def ana_sayfa():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
