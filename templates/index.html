@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regl Takipçim Pro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <div class="ana-kapsayici">
+
+        <div id="girisEkrani" class="ekran">
+            <header>
+                <h1>🌸 Hoş Geldin!</h1>
+                <p>Seni daha yakından tanıyalım.</p>
+            </header>
+
+            <div class="form-kutusu">
+                <div class="satir">
+                    <div class="grup"><label>İsim:</label><input type="text" id="isim" placeholder="Adın ne?"></div>
+                    <div class="grup"><label>Yaş:</label><input type="number" id="yas" placeholder="18"></div>
+                </div>
+                
+                <div class="satir">
+                    <div class="grup"><label>Boy (cm):</label><input type="number" id="boy" placeholder="165"></div>
+                    <div class="grup"><label>Kilo (kg):</label><input type="number" id="kilo" placeholder="60"></div>
+                </div>
+
+                <div class="grup">
+                    <label>Herhangi bir ilaç kullanıyor musun?</label>
+                    <select id="ilacDurumu" onchange="ilacKutusuAc()">
+                        <option value="hayir">Hayır, kullanmıyorum</option>
+                        <option value="evet">Evet, kullanıyorum</option>
+                    </select>
+                </div>
+                
+                <div class="grup gizli" id="ilacIsimAlani">
+                    <label>İlacın İsmi:</label>
+                    <input type="text" id="ilacIsmi" placeholder="Örn: Doğum kontrol hapı...">
+                </div>
+
+                <hr>
+
+                <div class="grup">
+                    <label>Reglin Düzenli mi?</label>
+                    <select id="duzen">
+                        <option value="duzenli">Evet, genelde gününde olur</option>
+                        <option value="duzensiz">Hayır, bazen şaşar</option>
+                    </select>
+                </div>
+
+                <div class="satir">
+                    <div class="grup">
+                        <label>Son Regl Tarihi:</label>
+                        <input type="date" id="sonTarih">
+                    </div>
+                    <div class="grup">
+                        <label>Döngü Süresi (Gün):</label>
+                        <input type="number" id="donguSuresi" value="28">
+                    </div>
+                </div>
+                
+                <div class="grup">
+                    <label>Regl Kanaman Kaç Gün Sürüyor?</label>
+                    <input type="number" id="kanamaSuresi" value="5">
+                </div>
+
+                <button class="giris-btn" onclick="hesaplaVeGecisYap()">Giriş Yap ve Hesapla ✨</button>
+            </div>
+        </div>
+
+
+        <div id="sonucEkrani" class="ekran gizli">
+            
+            <div class="header-sonuc">
+                <h2 id="karsilamaMesaji">Merhaba!</h2>
+                <div class="kalan-gun-kutusu">
+                    <span id="kalanGunSayisi">0</span>
+                    <small>Gün Kaldı</small>
+                </div>
+                <p id="tahminiTarihYazisi" style="color:#888; font-size:12px; margin-top:5px;"></p>
+            </div>
+
+            <div class="grafik-alani">
+                <canvas id="reglGrafigi"></canvas>
+                <div class="grafik-ortasi">DÖNGÜN</div>
+            </div>
+
+            <div class="renk-aciklama">
+                <span class="nokta kirmizi"></span> Regl
+                <span class="nokta yesil"></span> Yumurtlama
+                <span class="nokta mavi"></span> Normal
+            </div>
+
+            <div class="bilgi-bolumu">
+                <h3>💡 Bilmen Gerekenler</h3>
+                
+                <button class="akordiyon">Ovulasyon (Yumurtlama) Nedir?</button>
+                <div class="panel">
+                    <p>Yumurtalıklarından birinden olgunlaşmış bir yumurtanın salınmasıdır. Bu dönemde hamile kalma şansı en yüksektir. Genelde döngünün ortasına denk gelir.</p>
+                    
+
+[Image of menstrual cycle diagram]
+
+                </div>
+
+                <button class="akordiyon">Yumurtlama Döneminde Ne Yapmalıyım?</button>
+                <div class="panel">
+                    <p>Vücut ısın artabilir ve enerjik hissedebilirsin. Eğer bebek düşünmüyorsan korunmaya ekstra dikkat etmelisin. Eğer bebek düşünüyorsan en uygun zamandır!</p>
+                </div>
+
+                <button class="akordiyon">Regl Ağrısı İçin Öneriler</button>
+                <div class="panel">
+                    <p>Sıcak su torbası, bitki çayları (papatya, rezene) ve hafif yürüyüşler krampları hafifletir. Magnezyum takviyesi de işe yarayabilir.</p>
+                </div>
+            </div>
+
+            <div class="yan-oneri" id="yanOneriKutusu">
+                <strong>🌟 Günün Önerisi:</strong>
+                <p>{{ tavsiye }}</p>
+            </div>
+
+            <button onclick="basaDon()" class="cikis-btn">Ayarları Düzenle</button>
+        </div>
+
+    </div>
+
+    <script>
+        // İlaç seçilirse kutuyu aç
+        function ilacKutusuAc() {
+            const durum = document.getElementById("ilacDurumu").value;
+            const alan = document.getElementById("ilacIsimAlani");
+            if (durum === "evet") {
+                alan.style.display = "block";
+            } else {
+                alan.style.display = "none";
+            }
+        }
+
+        // Akordiyon (Açılır Kutu) Mantığı
+        const acc = document.getElementsByClassName("akordiyon");
+        for (let i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function() {
+                this.classList.toggle("aktif");
+                const panel = this.nextElementSibling;
+                if (panel.style.maxHeight) {
+                    panel.style.maxHeight = null;
+                } else {
+                    panel.style.maxHeight = panel.scrollHeight + "px";
+                } 
+            });
+        }
+
+        // Hesaplama ve Grafik Çizimi
+        let myChart = null; // Grafik değişkeni
+
+        function hesaplaVeGecisYap() {
+            // Verileri Al
+            const isim = document.getElementById("isim").value || "Güzellik";
+            const sonTarihStr = document.getElementById("sonTarih").value;
+            const dongu = parseInt(document.getElementById("donguSuresi").value);
+            const kanama = parseInt(document.getElementById("kanamaSuresi").value);
+
+            if (!sonTarihStr || !dongu) {
+                alert("Lütfen tarih ve döngü süresini gir!");
+                return;
+            }
+
+            // Ekran Değiştir
+            document.getElementById("girisEkrani").style.display = "none";
+            document.getElementById("sonucEkrani").style.display = "block";
+
+            // Karşılama
+            document.getElementById("karsilamaMesaji").innerText = "Merhaba, " + isim + "!";
+
+            // Tarih Hesapları
+            const sonTarih = new Date(sonTarihStr);
+            const gelecekTarih = new Date(sonTarih);
+            gelecekTarih.setDate(sonTarih.getDate() + dongu);
+
+            const bugun = new Date();
+            const farkZaman = gelecekTarih - bugun;
+            const farkGun = Math.ceil(farkZaman / (1000 * 60 * 60 * 24));
+            
+            document.getElementById("kalanGunSayisi").innerText = farkGun > 0 ? farkGun : 0;
+            document.getElementById("tahminiTarihYazisi").innerText = "Tahmini Regl: " + gelecekTarih.toLocaleDateString('tr-TR');
+
+            // --- GRAFİK ÇİZİMİ (Chart.js) ---
+            // Döngüyü 3 parçaya böleceğiz:
+            // 1. Regl (Kanama) -> Kırmızı
+            // 2. Foliküler (Normal) -> Mavi
+            // 3. Yumurtlama (Fertil) -> Yeşil
+            // 4. Luteal (Normal) -> Mavi
+            
+            // Yumurtlama genelde sondan 14. gündür. Doğurganlık penceresi 5 gün sürer.
+            const yumurtlamaGunu = dongu - 14; 
+            const normalDonem1 = yumurtlamaGunu - 2 - kanama; // Regl bitişi ile yumurtlama arası
+            const dogurganDonem = 5; // Yumurtlama civarı
+            const normalDonem2 = 14 - 3; // Yumurtlama sonrası
+
+            const ctx = document.getElementById('reglGrafigi').getContext('2d');
+            
+            // Eğer eski grafik varsa sil (üst üste binmesin)
+            if (myChart) myChart.destroy();
+
+            myChart = new Chart(ctx, {
+                type: 'doughnut', // Simit grafik
+                data: {
+                    labels: ['Regl', 'Normal Dönem', 'Yumurtlama', 'Normal Dönem'],
+                    datasets: [{
+                        data: [kanama, normalDonem1, dogurganDonem, normalDonem2],
+                        backgroundColor: [
+                            '#ff7675', // Kırmızı (Regl)
+                            '#74b9ff', // Mavi (Normal)
+                            '#55efc4', // Yeşil (Yumurtlama)
+                            '#74b9ff'  // Mavi (Normal)
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    cutout: '70%', // Ortadaki boşluk
+                    plugins: {
+                        legend: { display: false }, // Üstteki etiketleri gizle
+                        tooltip: { enabled: true }
+                    }
+                }
+            });
+        }
+
+        function basaDon() {
+            document.getElementById("girisEkrani").style.display = "block";
+            document.getElementById("sonucEkrani").style.display = "none";
+        }
+    </script>
+</body>
+</html>

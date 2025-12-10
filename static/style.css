@@ -1,0 +1,112 @@
+/* GENEL AYARLAR */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0; padding: 0;
+    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    color: #444;
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh;
+}
+
+/* ANA KAPSAYICI (Mobil Uygulama Havası) */
+.ana-kapsayici {
+    width: 100%;
+    max-width: 400px; /* İnce uzun yapı */
+    background: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border-radius: 25px;
+    margin: 20px;
+    padding: 25px;
+    overflow-y: auto;
+    position: relative;
+    max-height: 90vh;
+}
+
+/* BAŞLIK VE SEKME BUTONLARI */
+header { text-align: center; margin-bottom: 20px; }
+header h1 { color: #d63031; font-size: 22px; margin: 0; }
+header p { color: #999; font-size: 13px; margin-top: 5px; }
+
+.sekmeler {
+    display: flex; gap: 10px; margin-bottom: 25px;
+    background: #fff0f6; padding: 5px; border-radius: 15px;
+}
+.sekmeler button {
+    flex: 1; padding: 10px; border: none;
+    background: transparent; color: #888;
+    border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600;
+    transition: 0.3s;
+}
+.sekmeler button.aktif {
+    background: white; color: #ff7675; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* FORM ALANLARI */
+.form-alani { animation: fadeIn 0.5s; }
+.grup { margin-bottom: 15px; }
+.satir { display: flex; gap: 10px; }
+.satir .grup { flex: 1; }
+label { display: block; font-size: 11px; font-weight: bold; color: #b2bec3; margin-bottom: 6px; text-transform: uppercase; }
+input, select {
+    width: 100%; padding: 12px 15px;
+    border: 2px solid #f1f2f6; border-radius: 12px;
+    background: #fdfdfd; font-family: 'Poppins', sans-serif; box-sizing: border-box;
+    font-size: 13px; color: #2d3436; transition: 0.3s;
+}
+input:focus, select:focus { border-color: #ff7675; outline: none; background: white; }
+
+/* BUTONLAR */
+.giris-btn {
+    width: 100%; background: linear-gradient(to right, #ff7675, #ff9a9e);
+    color: white; border: none; padding: 15px; border-radius: 12px;
+    font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 15px;
+    box-shadow: 0 5px 15px rgba(255, 118, 117, 0.4);
+    transition: transform 0.2s;
+}
+.giris-btn:hover { transform: translateY(-2px); }
+
+/* QUIZ TASARIMI (A, B, C, D Kutuları) */
+.soru-karti {
+    background: #fff; border: 1px solid #f0f0f0;
+    padding: 15px; border-radius: 15px; margin-bottom: 20px;
+}
+.soru-metni { font-size: 14px; font-weight: 600; margin-bottom: 15px; color: #2d3436; }
+.siklar { display: flex; flex-direction: column; gap: 8px; }
+
+/* Şıkların Kendisi (Radio butonunu gizleyip etiketi süsleyeceğiz) */
+.sik-etiketi {
+    display: block; padding: 10px 15px;
+    border: 2px solid #f5f6fa; border-radius: 10px;
+    font-size: 13px; color: #555; cursor: pointer;
+    transition: 0.2s;
+}
+.sik-etiketi:hover { background: #fff0f6; border-color: #ffcccc; }
+/* Seçili olan şıkkı boyama */
+input[type="radio"]:checked + span {
+    color: #d63031; font-weight: bold;
+}
+input[type="radio"] { margin-right: 10px; accent-color: #ff7675; }
+
+/* AKORDİYON (Bilgi Kutuları) */
+.akordiyon {
+    background-color: #fff0f6; color: #444;
+    cursor: pointer; padding: 15px; width: 100%;
+    border: none; text-align: left; outline: none;
+    font-size: 13px; font-weight: 600;
+    transition: 0.4s; border-radius: 10px; margin-bottom: 5px;
+}
+.akordiyon:after { content: '\002B'; color: #777; float: right; font-weight: bold; }
+.aktif:after { content: "\2212"; }
+.panel {
+    padding: 0 15px; background-color: white;
+    max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out;
+    font-size: 12px; color: #666; line-height: 1.5; border-left: 3px solid #ffcccc;
+}
+
+/* GRAFİK VE DİĞERLERİ */
+.header-sonuc { text-align: center; margin-bottom: 20px; }
+.grafik-alani { position: relative; width: 220px; height: 220px; margin: 0 auto 20px auto; }
+.grafik-ortasi { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 12px; font-weight: bold; color: #aaa; }
+.ozel-uyari-kutusu { background: #fff8e1; border-left: 4px solid #ffca28; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 12px; color: #555; }
+.gizli { display: none; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
